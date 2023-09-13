@@ -61,17 +61,17 @@ SLAM技术则很好地弥补了基于GNSS的导航系统的局限性，
 VINS保留了纯视觉SLAM的小体量和低成本，并且结合了IMU和相机二者的优点，变得更加鲁棒和精确，在敏捷且追求轻量化的无人机系统上具有很高的研究价值和广阔的应用前景。
 
 % 全驱动无人机
-多旋翼无人机的驱动力包括3维的力$\bm{f} \in \mathbb{R}^3$和3维的力矩$\bm{\tau} \in \mathbb{R}^3$，
-可将二者合并为一个6维向量$\bm{w} = \left[\bm{f}^\top \quad \bm{\tau}^\top\right]^\top \in \mathbb{R}^6$称为外力（wrench）。
-产生驱动力的执行器指令对应控制输入$\bm{u} \in \mathbb{R}^{n_{\bm{u}}}$。
-由外力$\bm{w_\text{act}}$求解对应控制输入$\bm{u}$的过程称为控制分配（control allocation），
-如图\ref{fig:uav_classification}所示，我们按照控制分配雅可比（Jacobian）$\frac{\partial \bm{w_\text{act}}}{\partial \bm{u}}$的秩可将无人机分为欠驱动系统和全驱动系统\cite{bodie2022omnidirectional}。
+多旋翼无人机的驱动力包括3维的推力$\bm{f} \in \mathbb{R}^3$和3维的力矩$\bm{\tau} \in \mathbb{R}^3$，
+可将二者合并为一个6维向量$\bm{w} = \left[\bm{f}^\top \quad \bm{\tau}^\top\right]^\top \in \mathbb{R}^6$称为力螺旋（wrench）。
+产生驱动力的执行器指令组成控制输入$\bm{u} \in \mathbb{R}^{n_{\bm{u}}}$。
+由给定力螺旋$\bm{w_\text{act}}$求解对应控制输入$\bm{u}$的过程称为控制分配（control allocation），
+如图\ref{fig:uav_classification}所示，我们按照执行器雅可比（Jacobian）$\frac{\partial \bm{w_\text{act}}}{\partial \bm{u}} \in \mathbb{R}^{6 \times n_{\bm{u}}}$的秩可将无人机分为欠驱动系统和全驱动系统\cite{bodie2022omnidirectional}。
 目前常用的平行轴四旋翼、六旋翼等传统无人机属于欠驱动系统，它们的控制分配雅可比的秩为4，意味着它们只有4个控制自由度，
 导致其机动性受限，且抗干扰能力弱。
 为解决这些问题，充分发挥多旋翼飞行器的潜力，近年来发展出了多种全驱动无人机。
 这些工作通过改变旋翼几何构型、增加旋翼倾转自由度等方式让旋翼能提供相对机身任意方向的推力和转矩，使得$\text{rank}(\frac{\partial \bm{w}_\text{act}}{\partial \bm{u}}) = 6$。
-全驱动无人机能够独立地进行位置和姿态控制，具有任意姿态悬停、多旋翼飞行器跟踪6自由度全状态轨迹的能力，故又称为全向飞行器（omnidirectional aerial vehicle）。
-进行这种受控的、自由的刚体运动是传统欠驱动多旋翼飞行器所无法做到的，这也赋予了全驱动无人机在空中作业、避障等方面具有很大的优势和潜力。
+全驱动无人机能够独立地进行位置和姿态控制，具有任意姿态悬停、跟踪6自由度全状态轨迹的能力，故又称为全向飞行器（omnidirectional aerial vehicle）。
+进行这种受控的、自由的刚体运动是传统欠驱动多旋翼飞行器所无法做到的，这也赋予了全驱动无人机在空中作业、避障等方面很大的优势和潜力。
 
 \begin{figure}[htbp]
     \centering
@@ -123,7 +123,7 @@ VSLAM和VISLAM到当下已经取得了长足的发展，
 一些相关的数学公式被提出，SLAM首次得到了高效地应用。
 在第二阶段（图\ref{fig:vslam_history}中的Algorithmic-analysis age），SLAM研究的焦点转移到了基于视觉的方法（vision-based approaches），
 此阶段也被称为SLAM研究的“黄金阶段”\cite{servieres2021visual}。
-研究者们提出了一些视觉SLAM方案，并且将GPU、RGB-D相机、双目相机（stereo camera）等新型硬件集成到了SLAM系统中。
+这期间研究者们提出了一些视觉SLAM方案，并且将GPU、RGB-D相机、双目相机（stereo camera）等新型硬件集成到了SLAM系统中。
 视觉SLAM的一些重要性质（如收敛性和一致性）也得到了研究，
 也是从这个时期开始视觉SLAM成为了SLAM方法发展的中心。
 第三阶段视觉SLAM的研究主要致力于改善系统的鲁棒性（robustness），
@@ -134,18 +134,18 @@ VSLAM和VISLAM到当下已经取得了长足的发展，
 已经有许多优秀的框架诞生：
 视觉SLAM领域有LSD-SLAM\cite{engel2014lsd}、ORB-SLAM2\cite{mur2017orb}、DSO\cite{engel2017direct}等，
 视觉惯性SLAM领域有VINS-Mono\cite{qin2018vins}、ORB-SLAM3\cite{campos2021orb}、DM-VIO\cite{von2022dm}等。
-这些极大地推动了机器人导航定位技术地发展。
+这些极大地推动了机器人导航定位技术的发展。
 
 \subsubsection{无人机的外力估计研究现状}\label{subsubsec:external_wrench_estimation}
 无人机的外力估计也是一个被研究多年的课题，并且当下已有多种多样的解决方案，
 大致上可以分为确定性方法、概率性方法和基于滑窗（sliding window）优化的方法\cite{nisar2019vimo}。
-特别是近年发展出的无人机动力学模型辅助的模型视觉惯性SLAM方法\cite{ding2021vid, nisar2019vimo}，
+特别是近年发展出的无人机动力学模型辅助的视觉惯性SLAM方法\cite{ding2021vid, nisar2019vimo}，
 该方法将外力也作为VIO系统的待估计变量，
 根据动力学模型构造动力学残差项并将其添加进后端优化的代价函数中。
-结果表明这种方法既可以紧耦合地精确估计外力、又可以提高原始VIO部分的精度，
+结果表明这种方法既可以紧耦合地精确估计外力、又可以提高原VIO部分的精度，
 有待改进的一点是该方法只能估计三维合外力而不能估计外力矩，
 然而外力矩的估计对于无人机（特别是全向无人机）来说也具有重要意义。
-视觉、惯性和动力学模型三者紧耦合的运动和外外力估计也是本课题将重点探索的方向。
+视觉、惯性和动力学模型三者紧耦合的运动和外力估计也是本课题将重点探索的方向。
 
 \subsubsection{全驱动旋翼无人机研究现状}
 
@@ -156,9 +156,9 @@ VSLAM和VISLAM到当下已经取得了长足的发展，
 
     \centering
     \subfigure{\label{subfig:fix_rotor}}\addtocounter{subfigure}{-2}
-    \subfigure{\subfigure[固定旋翼型]{\includegraphics[width=0.45\textwidth]{octo_omav.png}}}
+    \subfigure{\subfigure[固定旋翼型\cite{brescianini2016design}]{\includegraphics[width=0.45\textwidth]{octo_omav.png}}}
     \subfigure{\label{subfig:tilt_rotor}}\addtocounter{subfigure}{-2}
-    \subfigure{\subfigure[倾转旋翼型]{\includegraphics[width=0.45\textwidth]{voliro_2.png}}}
+    \subfigure{\subfigure[倾转旋翼型\cite{kamel2018voliro}]{\includegraphics[width=0.45\textwidth]{voliro_2.png}}}
 
     \end{minipage}
     \caption{两种类型的全驱动旋翼无人机}
@@ -167,13 +167,13 @@ VSLAM和VISLAM到当下已经取得了长足的发展，
 
 实现多旋翼飞行器全驱动化的要点在于使驱动器同时且独立地产生相对机体任意方向推力和力矩，而要做到这一点需要改变旋翼的构型（configuration of rotors）。
 全驱动多旋翼飞行器领域近年来正处于持续发展中，这些飞行器按照旋翼构型大致可分为两类：固定旋翼型（fixed-rotor）\cite{brescianini2016design, park2018odar,allenspach2020design}和倾转旋翼型（tiltrotor）\cite{ryll2014novel, kamel2018voliro}。
-\ref{fig:two_types_of_fully_actuated_uav}分别展示了两种构型中具有代表性的一项工作。
+图\ref{fig:two_types_of_fully_actuated_uav}分别展示了两种构型中具有代表性的一项工作。
 
 \subsection{国内外文献综述及简析}
 \subsubsection{视觉SLAM及视觉惯性SLAM文献综述及简析}
-卡尔曼滤波（Kalman Filter）\cite{kalman1960new}和扩展卡尔曼滤波（Extended Kalman Filter, EKF）\cite{maybeck1982stochastic}的提出开启了现代定位（Localization）的研究历史。
-SLAM问题是在20世纪80年代形成的并且于1995年证明了收敛性\cite{durrant1988uncertain,leonard1991simultaneous,smith1986representation}。
-在这段时间里，一些SLAM方法被提出，它们主要基于激光测距仪和从不同来源计算地里程计信息并且基于EKF实现，
+卡尔曼滤波（Kalman Filter）\cite{kalman1960new}和扩展卡尔曼滤波（Extended Kalman Filter, EKF）\cite{maybeck1982stochastic}的提出开启了现代定位（localization）的研究历史。
+SLAM问题在20世纪80年代成形，并且于1995年证明了收敛性\cite{durrant1988uncertain,leonard1991simultaneous,smith1986representation}。
+在这段时间里，一些SLAM方法被提出，它们主要基于激光测距仪及从不同来源计算的里程计信息，并且基于EKF实现，
 如Smith等人于1988年提出的EKF-SLAM\cite{cheeseman1987stochastic}。
 Davison等人于2007年提出的MonoSLAM\cite{davison2007monoslam}是第一个只用单个低成本的视觉传感器的SLAM方法，
 其仅用一个网络摄像头、一台通用电脑，并且不需要里程计的测量值，就实现了基于EKF的3维建图和定位。
@@ -205,9 +205,9 @@ Davison等人于2007年提出的MonoSLAM\cite{davison2007monoslam}是第一个�
 目前常用的特征点方案有Harris\cite{si1988combined}、SURF\cite{bay2006surf}、SIFT\cite{lowe2004distinctive}、FAST\cite{rosten2006machine}和ORB\cite{rublee2011orb}等，
 特征点方案的选择主要取决于对鲁棒性和计算效率的权衡。
 前述的MonoSLAM\cite{davison2007monoslam}是一种基于EKF的特征点法视觉SLAM。
-基于EKF的特征点法SLAM都会受到特征点数平方的复杂度的困扰。
+基于EKF的特征点法SLAM都会受到特征点数量平方级的复杂度的困扰。
 2002年，Rao-Blackwellized粒子滤波器（particle filter）被应用于Montemerlo等人提出的FastSLAM\cite{montemerlo2002fastslam}，
-该方法有效降低了对数尺度的复杂性，并且被成功迁移到了单目视觉SLAM中\cite{eade2006scalable}。
+该方法有效降低了对数尺度的复杂性（the complexity of logarithmic scaling），并且被成功迁移到了单目视觉SLAM中\cite{eade2006scalable}。
 然而，即使是FastSLAM方法的最小复杂度也严重限制了SLAM的应用，
 尤其是需要提取大量特征点的视觉SLAM。
 直到2007年，Klein等人提出了一种基于关键帧的（keyframe-based）解决方案PTAM\cite{klein2007parallel}，
@@ -254,9 +254,9 @@ ORB-SLAM模块划分清晰，成为很多后续工作的基础，
     \label{fig:elastic_fusion_demo}
 \end{figure}
 \textbf{RGB-D法}：
-基于RGB-D的视觉SLAM方法需要特制的硬件，即RGB-D相机，又称深度相机。
-RGB-D相机除了获取环境的RGB图像外，还可以通过结构光和飞行时间（Time of Flight, ToF）等方式获取图像中每一点的深度（depth），
-因此可以直接获得当前图像对应的点云（point cloud），极大地方便了SLAM过程。
+RGB-D法视觉SLAM方法需要特制的硬件，即RGB-D相机，又称深度相机。
+RGB-D相机除了获取环境的RGB图像外，还可以通过结构光和飞行时间（Time of Flight, ToF）等方式获取图像中每个像素点对应的环境中点深度（depth），
+因此可以直接获得当前图像对应的稠密点云（point cloud），极大地方便了SLAM过程。
 2011年提出的KinectFusion\cite{newcombe2011kinectfusion}目标就在于使用Microsoft Kinect深度相机对环境进行精细的三维重建。
 Kerl等人于2013年提出的稠密视觉SLAM方法\cite{kerl2013dense}主要专注于利用稠密地图的优势进行精确定位。
 Whelan等人于2015年提出了ElasticFusion\cite{whelan2015elasticfusion}，该方法则更多地关注重建出的三维模型的几何精度。
@@ -301,11 +301,11 @@ MSCKF\cite{mourikis2007multi}和MSCKF 2.0\cite{li2013high}就属于紧耦合视�
 2015年提出的ROVIO\cite{bloesch2015robust}也是一种基于EKF的紧耦合直接法VIO。
 著名的OKVIS\cite{leutenegger2015keyframe}和S-MSCKF\cite{sun2018robust}是双目VIO。
 Lupton等人于2011年提出了IMU预积分（pre-integration）\cite{lupton2011visual}，
-可以显著降低了基于优化的视觉惯性SLAM的计算量。
-Foster等人于2016年对IMU预积分作出改进\cite{forster2016manifold}，是其能更好地适应旋转群的流形结构。
+可以显著降低基于优化的视觉惯性SLAM的计算量。
+Foster等人于2016年对IMU预积分作出改进\cite{forster2016manifold}，使其能更好地适应旋转群的流形结构。
 基于改进后的IMU预积分方法，
-Qin等人于2018年提出了VINS-Mono\cite{qin2018vins}，VINS-Mono是一套真正的视觉惯性SLAM而非仅仅是一种VIO方法。
-Kimera也是基于一个VIO方法，但它同时还包含用于全局轨迹估计的多线程位姿图优化器、一个3D网格重建模块和一个3D度量-语义重建模块。
+Qin等人于2018年提出了VINS-Mono\cite{qin2018vins}，VINS-Mono是一套真正的视觉惯性SLAM而非仅仅是一种VIO方法\cite{servieres2021visual}。
+Kimera\cite{rosinol2020kimera}也是基于VIO的方法，但它同时还包含用于全局轨迹估计的多线程位姿图优化器、一个3D网格重建模块和一个3D度量-语义重建模块。
 2021年发表并开源的ORB-SLAM3\cite{campos2021orb}是在纯视觉的ORB-SLAM2\cite{mur2017orb}的基础上融合了IMU数据，并引入地图拼接，提高了鲁棒性。
 2022年发表的DM-VIO\cite{von2022dm}基于延迟边缘化（delayed marginalization）和位姿图光束平差法（pose graph bundle adjustment, PGBA）并将这两种技术用于IMU初始化，
 这让DM-VIO的效果在视觉惯性里程计中达到了最高水平，其在3种公开的基准数据集上的表现见图\ref{fig:dm_vio_demo}。
@@ -319,7 +319,7 @@ Kimera也是基于一个VIO方法，但它同时还包含用于全局轨迹估�
 确定性方法是通过将合推力向量从惯性测量数据中减掉来估计外力的\cite{tomic2014unified}。
 这类方法主要是基于非线性观测器，包括扰动观测器（disturbance observer, DOB）\cite{liang2023active, yuksel2014nonlinear}、动量观测器（momentum observer, MOB）\cite{bodie2019omnidirectional,nigro2021control, tomic2016flying,ruggiero2014impedance}等。
 确定性方法的缺点主要在于没有考虑推力输入、系统状态和IMU的噪声，也没有考虑IMU的时变零漂。
-因此，确定性方法只有在输入输出数据被仔细处理过或者所用的传感器的信噪比非常高的情况下才能正常工作。
+因此，确定性方法只有在输入输出数据经过仔细处理过或者所用的传感器的信噪比非常高的情况下才能正常工作。
 
 \textbf{概率性方法}：
 概率性方法主要基于卡尔曼滤波。
@@ -333,7 +333,7 @@ McKinnon等人于2011年提出了一种基于无迹卡尔曼滤波（Unscented K
 因为它们对系统状态的估计来源于一个分立的估计器，
 随后在另一个分立的估计步骤中将这个估计结果与来自无人机动力学模型的预测融合。
 松耦合估计器没有考虑所有待估计变量之间的关联，这可能会导致估计结果不精确。
-此外，对外力的估计是在一个额外的融合步骤中进行的，这可能会带来延迟和额外的计算负担。
+此外，对外力的估计是在一个额外的融合步骤中进行的，这可能会带来延迟和额外的计算负担\cite{nisar2019vimo}。
 
 \begin{figure}[!ht]
     \setlength{\subfigcapskip}{-1bp}
@@ -347,18 +347,18 @@ McKinnon等人于2011年提出了一种基于无迹卡尔曼滤波（Unscented K
     \subfigure{\subfigure[VID-Fusion的因子图\cite{ding2021vid}]{\includegraphics[width=0.45\textwidth]{vid_fusion_factor_graph.png}}}
 
     \end{minipage}
-    \caption{SLAM技术常用的传感器}
+    \caption{两种视觉-惯性-动力学里程计的因子图}
     \label{fig:common_sensors_for_slam}
 \end{figure}
 
 \textbf{基于滑窗优化的方法}：
-目前基于滑窗优化的无人机外力估计方法主要是将动力学模型融合如VIO系统中。
+目前基于滑窗优化的无人机外力估计方法主要是将动力学模型应用到VIO系统中。
 Antonini的研究\cite{antonini2018pre}表明，
 在基于平滑的VIO中，
 将动力学残差结合IMU残差作为加速度信息的额外来源可以增加状态估计的鲁棒性，
 尤其是在加速度计信噪比低的低速飞行场景中。
 但Antonini的方法只建模了空气阻力，而忽略了其他外力作用，
-这在有风或者外力作用的场景下可能会造成系统混淆IMU零漂和外力，导致对零漂的错误处理\cite{abeywardena2014model}，
+这在有风或者外力作用的场景下可能会造成系统对IMU零漂和外力的混淆，导致对零漂的错误处理\cite{abeywardena2014model}，
 因此该方法只能在无扰动的环境中运行。
 Kobilarov等人于2015年提出了一种基于动态微分规划（Dynamic Differetial Programming, DDP）的状态和外力估计方法\cite{kobilarov2015differential}，
 但该方法对测量过程过于简化而没有展示出实际应用价值。
@@ -369,7 +369,7 @@ Nisar等人于2015年提出了能同时估计运动和外力的视觉里程计VI
 得到如图\ref{subfig:vimo_factor_graph}所示的因子图。
 实验结果表明VIMO在状态估计方面相比原始的VINS-Mono在准确度上有最高可达29\%的提升，
 同时在不增加计算时间的情况下还能提供对外力的估计。
-VIMO搭建了在基于优化的VIO系统中运动估计和外力估计之间的桥梁，
+VIMO搭起了在基于优化的VIO系统中运动估计和外力估计之间的桥梁，
 但是由于将外力建模为零均值的Gaussian，
 VIMO在较大或连续的外力作用下会受到严重影响甚至会失效\cite{ding2021vid}。
 为解决VIMO的上述问题，
@@ -380,18 +380,19 @@ VID-Fusion是一个完整的基于优化的紧耦合视觉-惯性-动力学里�
 无人机的合推力信息来自于自制的转速测量单元（Rotating speed Measurement Unit, RMU），
 每个RMU对旋翼电机磁场进行测量，
 将该测量数据进行快速傅里叶变换（Fast Fourier Transform, FFT）后可得到每个旋翼的转速值，
-结合辨识出的旋翼升力系数可得到合推力。
+再结合辨识出的旋翼升力系数可得到合推力。
 由于VID-Fusion显式考虑了外力的影响，
-即使是在外力变化范围很大的情况下它也具有与VINS-Mono和VIMO相当和更好的精度。
+即使是在外力变化范围很大的情况下它也具有与VINS-Mono和VIMO相当甚至更好的精度。
 不过VIMO和VID-Fusion都只能估计3轴合外力，而不能估计外力矩。
 除了基于视觉惯性里程计的方法外，
-2022年Papadimitriou等人还提出了一种非线性基于滚动时域估计（Non-linear Moving Horizon Estimation, NMHE）的无人机外力估计方法\cite{papadimitriou2022external}，
+2022年Papadimitriou等人还提出了一种基于非线性滚动时域估计（Non-linear Moving Horizon Estimation, NMHE）的无人机状态和外力估计方法\cite{papadimitriou2022external}，
 该方法配合非线性模型预测控制（Non-linear Model Predictive Control, NMPC），
 实现了无人机对各种外部干扰的补偿，
 该方法同样只估计了合外力而没有估计外力矩。
 
 \subsubsection{全驱动旋翼无人机文献综述及简析}
-固定旋翼的过（全）多旋翼飞行器的机械结构相对简单，飞行器通过改变不同朝向旋翼的转速来控制推力和转矩的大小和方向。
+\textbf{固定旋翼型}：
+固定旋翼型过（全）多旋翼飞行器的机械结构相对简单，飞行器通过改变不同朝向旋翼的转速来控制推力和转矩的大小和方向。
 如图\ref{subfig:fix_rotor}所示为Brescianini等人于2016年发表的一种实现灵活全向飞行的固定旋翼型八旋翼飞行器系统\cite{brescianini2016design}，
 该系统采用8个可逆电机-旋翼组合执行器（reversible motor-propeller actuator），故每个执行器都可以产生正推力和负推力，
 8个执行器的构型是基于静态力和扭矩分析，采用求解优化问题的方式来设计的，以期最大化飞行器的灵活性并最大限度保证飞行器动力学特性的旋转不变性。
@@ -405,7 +406,8 @@ VID-Fusion是一个完整的基于优化的紧耦合视觉-惯性-动力学里�
     \label{fig:tiltrotor_quadrotor}
 \end{figure}
 
-可倾转旋翼型全向多旋翼飞行器的实现方式多数是为旋翼增加额外的自由度，使其转轴指向可以改变。
+\textbf{倾转旋翼型}：
+倾转旋翼型全向多旋翼飞行器的实现方式多数是为旋翼增加额外的自由度，使其转轴指向可以改变。
 比较常用的方式是为安装旋翼的机臂添加一个绕其轴的旋转自由度:
 如图\ref{fig:tiltrotor_quadrotor}展示了Markus等人于2015年研制出的一种可倾转旋翼的冗余驱动四旋翼飞行器的结构\cite{ryll2014novel}，该飞行器可以在有限的横滚角和俯仰角下实现悬停；
 图\ref{subfig:tilt_rotor}展示的是Kamel等人于2018年开发的一种可倾转旋翼的全向六旋翼飞行器Voliro\cite{kamel2018voliro}，该飞行器可以实现任意姿态下的悬停和飞行。
@@ -434,75 +436,78 @@ VID-Fusion是一个完整的基于优化的紧耦合视觉-惯性-动力学里�
 仅有部分为全驱动无人机设计运动规划算法的工作。
 2018年Brescianini等人基于运动基元为全向飞行器生成了从给定起点到给定终点且满足一定输入约束的6自由度轨迹\cite{brescianini2018computationally}，该工作可以在短时间内迅速探索出大量轨迹并判断其可行性。
 同年Morbidi等人提出了用于倾转旋翼六旋翼飞行器的节能轨迹生成方法\cite{morbidi2018energy}，通过求解一个显式考虑电机电气模型的优化控制问题得到一条指定边界点的节能轨迹，并做了数值验证。
-2021年Pantic等人提出了基于流形网格的运动规划方法\cite{pantic2021mesh}，该方法将物体表面（surface）建模为三角网格（triangular mesh）并提出原始表面的一个低维参数化表示方法，进一步将原始表面及其低维表示近似为流形（manifold），运用黎曼运动策略（Riemannian Motion Policies，RMPs）构建了一个高效且通用的运动规划框架。
+2021年Pantic等人提出了基于流形网格的运动规划方法\cite{pantic2021mesh}，该方法将物体表面（surface）建模为三角网格（triangular mesh）并提出原始表面的一个低维参数化表示方法，进一步将原始表面及其低维表示近似为流形（manifold），运用黎曼运动策略（Riemannian Motion Policies，RMPs）构建了一个高效且通用的、面向飞行器与表面交互的运动规划框架。
 2022年Liu等人为全驱动无人机提出了一种6自由度时间最优轨迹的生成方法\cite{liu2022optimal}。
 以上工作无一例外都没有将环境中的障碍物纳入考虑。
 2022年本课题组提出了一种基于优化的全驱动飞行器6自由度无碰撞轨迹生成方法\cite{liu2022collision}，
 该方法将Wang等人于2022年提出的MINCO轨迹类及基于MINCO的几何约束多旋翼轨迹优化框架GCOPTER\cite{wang2022geometrically}扩展到了6维，
 并且考虑了机器人的几何形状和姿态，
-使得生成的轨迹可以充分利用环境中的无碰撞空间，
+因此生成的轨迹可以充分利用环境中的无碰撞空间，
 使得无人机安全穿越狭长空间成为可能，
 具体效果如图\ref{fig:collision_free_6dof_trajectory}所示。
 还有部分为针对6自由度刚体运动规划的工作
 \cite{nguyen2016time, belta2002svd, belta2002euclidean, bestaoui2003motion, zefran1998generation, watterson2016smooth, jackson2021planning}
 具有应用到全驱动无人机上的可能。
 
-\section{学位论文的主要研究内容、实施方案及其可行性论证}
-\subsection{主要研究内容}
+\section{主要研究内容及研究方案}
+\subsection{研究内容}
 本课题主要对多旋翼无人机的视觉-惯性导航方法进行研究，
 期望能设计一个能在实现精确的运动估计的同时，
 还能将欠驱动无人机和全驱动无人机的动力学模型纳入考虑以得到精确实时的合外力和外力矩估计的视觉-惯性导航系统，
 并期望能将该导航系统部署到全驱动无人机上，
 配合稠密建图和运动规划算法实现全驱动无人机在未知复杂环境下的自主导航并提高其抗扰性能。
 
-本课题的主要研究内容分为以下部分：
-
-\textbf{应用动力学模型的视觉惯性里程计的研究}：
-目前基于视觉惯性的紧耦合无人机外力估计方案只能对3维合外力进行估计，而不能估计外力矩，
+\subsubsection{应用动力学模型的视觉惯性里程计的研究}
+目前基于视觉惯性的紧耦合无人机外力估计方案只能对3维合外力进行估计，而不能估计外力矩。
 而且与外力矩相关的角加速度并不能通过传感器直接获得，
 直接对陀螺仪测量的角速度值进行差分可能会引入额外噪声\cite{邱国鹏2023应用视觉}。
 已有的可估计外力矩的方法主要基于非线性观测器和卡尔曼滤波，
 多数属于松耦合方法，
 且存在对噪声敏感，或引入延迟和额外的计算量的问题。
 本课题尝试对视觉惯性导航和外力估计的理论进行研究，
-设计一种可以精确、鲁棒且实时地同时估计无人机运动、外力和外力矩的视觉惯性里程计。
+结合各种方法的优点和思想，
+设计一种基于视觉惯性的可精确、鲁棒且实时地同时估计无人机运动、外力和外力矩的导航方案。
 
-\textbf{全驱动无人机的研究}：
-本课题期望能将所设计的能同时估计外力的视觉惯性里程计部署到全驱动无人机上，
-实现全驱动无人机的自主导航，
+\subsubsection{全驱动无人机的研究}
+本课题期望能将所设计的视觉惯性导航系统部署到全驱动无人机上，
+实现全驱动无人机的自主导航。
 首先需要对全驱动无人机的机械结构和理论模型进行了解，
 特别是全驱动无人机的动力学模型和控制策略，
 本课题将基于全驱动无人机OmniHex的仿真和实物平台对此展开研究。
 
-\textbf{无人机自主导航其它相关技术的研究}：
+\subsubsection{无人机自主导航其它相关技术的研究}
 本课题要实现无人机的自主导航，
-除需要主要研究内容视觉惯性里程计外，
-还需要稠密建图和运动规划算法进行研究。
+除主要研究内容视觉惯性里程计外，
+还需要对稠密建图和运动规划算法进行研究。
 本课题将对基于RGB-D相机的稠密建图和复杂环境中全驱动无人机的运动规划方案进行研究设计。
 
-\subsection{实施方案及其可行性论证}
-\subsubsection{实施方案}
-\textbf{理论研究}：
+\subsection{研究方案}
+\subsubsection{理论研究}
 本课题首先将对最优估计、计算机视觉和无人机系统建模等相关理论知识进行学习研究。
 对现有不同的VIO、外力估计、运动规划方案进行调研和对比，
 总结各方法的主要思想、优势和短板，
 并试图针对研究对象的特点进行理论创新。
-学习研究稠密建图的理论与方法，
-并进行实现、部署和创新。
+学习研究稠密建图的理论与实现，
+改进已有的运动规划方案的理论与实现，
+并进行部署和创新。
 
-\textbf{工程实现}：
+\subsubsection{工程实现}
 本课题涉及软硬件开发与调试等工程问题。
 由于当前OmniHex的软件系统和仿真平台是主要基于ROS2开发的，
 并且ROS2在各方面相对于ROS更有优势，
 因此本课题的导航系统考虑基于ROS2实现，
 考虑到目前主流的视觉惯性导航框架都是基于ROS实现的，
-因此本课题的工程实现可能设计算法移植。
+因此本课题的工程实现可能涉及算法移植。
 具体选择哪个平台有待后续调研。
+为得到无人机的推力信息，
+除参考VIMO直接使用飞控输出的推力指令外，
+更好的解决方案可能是参考VID-Fusion自制RMU，
+因此可能涉及嵌入式开发。
 目前OmniHex的实物模型还不能做到大倾角飞行，
 需要进行进一步调试，
 如有必要需修改机械结构或者搭建一台新飞机。
 
-\textbf{实验验证}：
+\subsubsection{实验验证}
 本课题将分别进行仿真和实物实验进行验证。
 其中同时估计外力的VIO算法还将基于公开数据集进行验证，
 该算法的实物验证计划分别基于欠驱动无人机和全驱动无人机进行实验，
@@ -535,7 +540,7 @@ VID-Fusion是一个完整的基于优化的紧耦合视觉-惯性-动力学里�
 
 \subsection{进度安排}
 本课题的研究从2023年9月开始，到2024年12月进行最终答辩，
-结合自身知识储备和科研学习能力，指定如下进度安排：
+结合自身知识储备和科研学习能力，制定如下进度安排：
 
 2023年9月至2023年11月：
 调研学习视觉惯性导航和无人机外力估计的理论方法，
@@ -543,11 +548,11 @@ VID-Fusion是一个完整的基于优化的紧耦合视觉-惯性-动力学里�
 对相关理论进行具体研究。
 同时对OmniHex实物平台进行调试。
 
-2023年11月至2024年2月：
+2023年11月至2024年4月：
 完成同时估计运动和外力的视觉惯性里程计算法的设计和实现
 并完成在公开数据集和仿真中完成基于欠驱动和全驱动飞行器的验证。
 
-2024年2月至2024年7月：
+2024年4月至2024年7月：
 完成稠密建图和运动规划算法的设计和实现，
 并配合VIO实现首先完成基于四旋翼无人机的仿真和实验验证。
 
@@ -562,10 +567,76 @@ VID-Fusion是一个完整的基于优化的紧耦合视觉-惯性-动力学里�
 
 \section{已具备的研究条件和所需条件及经费}
 \subsection{实验室条件和经费保障}
+实验室已有多架四旋翼无人机、一架OmniHex和一套动作捕捉系统，
+传感器、电机和计算设备种类其全数量足够，
+全驱动无人机属于实验室项目，经费足够，
+可满足本课题的基本需求。
 
 \subsection{所需条件及经费}
+本课题所需经费主要在于全驱动无人机的实物搭建上，
+目前已有的OmniHex各部分估计造价如表\ref{tab:omni_hex_bom}所示：
+
+\begin{table}[htbp]
+    \caption{OmniHex主要组件BOM表\label{tab:omni_hex_bom}}
+    \vspace{0.5em}\centering\wuhao
+    \begin{tabular}{ccccccc}
+    \toprule[1.5pt]
+    组件名称 & 预估单价 & 数量 & 总额 \\
+    \midrule[0.2pt]
+    Intel NUC 迷你计算机 & 4000 & 1 & 4000 \\
+    Pixhawk自驾仪 & 2000 & 1 & 2000 \\
+    锂电池 & 70 & 1 & 70 \\ 
+    固定起落架 & 100 & 1 & 100 \\ 
+    Dynamixel伺服舵机 & 2400 & 6 & 14400 \\
+    无刷电机及相关配件 & 600 & 6 & 3600 \\ 
+    电子配件 & 600 & $\backslash$ & 600 \\
+    机架板材 & 700 & $\backslash$ & 700 \\ 
+    轴承相关 & 1320 & $\backslash$ & 1320 \\
+    紧固件 & 50 & $\backslash$ & 50 \\ 
+    合计 & $\backslash$ & $\backslash$ & 26840 \\
+    \bottomrule[1.5pt]
+    \end{tabular}
+  \end{table}
 
 \section{预计困难及解决方案}
+\subsection{预计困难与技术难点}
+课题进行需要学习的知识较多，
+涉及软硬件开发与调试、最优估计、计算机视觉、最优控制等知识；
+研究过程涉及理论研究、工程实现等具有挑战性的步骤，
+总体难度和工作量比较大。
+预计可能遇到的困难如下：
+
+（1）目前没有基于视觉-惯性的紧耦合外力矩估计方法，
+而且与外力矩观测直接相关的角加速度无法直接从传感器中获得，
+直接对角速度进行差分可能会引入额外噪声从而影响估计精度。
+
+（2）目前OmniHex实物飞行器仅能进行小倾角（约$30^\circ$以内）姿态控制，
+倾角过大会造成整个系统振荡发散导致坠机。
+推测是由PID参数没有整定到位，以及舵机和机臂之间的传动结构存在的死区造成的，
+后续由可能需要修改机械结构重新搭建一台OmniHex。
+
+（3）全驱动无人机属于新兴领域，
+在设计、控制和调试方面可借鉴经验极少，
+全驱动无人机的自主导航更是未见先例，
+因此本课题基于全驱动无人机的实物验证部分存在较大挑战性和不确定性。
+
+\subsection{解决方案}
+为了提高课题进展速度和效率，保证学习质量，
+采用边应用边学习再应用的方法进行主要知识的系统学习，
+并多动手实际操作，提高动手操作能力，也为后期打下良好的基础。
+同时采取以下方案：
+
+（1）广泛调研各种外力估计方案，
+总结各方案的优势短板和设计思想，
+集思广益，充分结合各种方案的优点。
+
+（2）与实验室同窗以及老师多沟通多讨论，
+寻找问题解决的思路和灵感，
+遇到难以解决的问题及时向他人寻求帮助。
+与同组人员合作学习，提高效率并避免重复性工作。
+
+（3）理论学习与实践操作并行，
+提高学习和工作效率。
 
 \bibliographystyle{hitszthesis}
 \bibliography{reference}
